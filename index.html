@@ -169,32 +169,40 @@
   }
 
 function spin() {
-  if (spinning || items.length === 0) return;
+  if (spinning || numbers.length === 0) return;
   spinning = true;
 
-  const radius = items.length;
-  const sliceAngle = 2 * Math.PI / radius;
+  const sliceAngle = 2 * Math.PI / numbers.length;
 
   // pick a random target slice
-  const targetIndex = Math.floor(Math.random() * items.length);
+  const targetIndex = Math.floor(Math.random() * numbers.length);
 
-  // add extra full rotations
-  const extraRotations = Math.floor(Math.random() * 8) + 12;
+  // add extra full rotations for randomness
+  const extraRotations = Math.floor(Math.random() * 15) + 15;
+
+  // small random offset within the slice to avoid repeating same numbers
+  const randomOffsetWithinSlice = (Math.random() - 0.5) * sliceAngle * 0.9;
 
   // calculate target angle so the chosen slice lands at the arrow
-  const targetAngle = extraRotations * 2 * Math.PI + (items.length - targetIndex) * sliceAngle - sliceAngle/2;
+  const targetAngle = angle + extraRotations * 2 * Math.PI +
+                      (numbers.length - targetIndex) * sliceAngle -
+                      sliceAngle/2 + randomOffsetWithinSlice;
 
+  const spinDuration = 2.5 + Math.random() * 1.5; // slightly random spin duration
+
+  // reset transition for instant jump
   canvas.style.transition = 'none';
-  canvas.style.transform = `rotate(0rad)`;
-  void canvas.offsetWidth;
+  canvas.style.transform = `rotate(${angle}rad)`;
+  void canvas.offsetWidth; // force reflow
 
-  canvas.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
+  // animate spin
+  canvas.style.transition = `transform ${spinDuration}s cubic-bezier(0.33, 1, 0.68, 1)`;
   canvas.style.transform = `rotate(${targetAngle}rad)`;
 
   setTimeout(() => {
     spinning = false;
     angle = targetAngle % (2 * Math.PI);
-  }, 3000);
+  }, spinDuration * 1000);
 }
 
 
