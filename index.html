@@ -180,19 +180,19 @@ function spin() {
   // add extra full rotations for randomness
   const extraRotations = Math.floor(Math.random() * 15) + 15;
 
-  // small random offset within the slice to avoid repeating same numbers
+  // small random offset within the slice
   const randomOffsetWithinSlice = (Math.random() - 0.5) * sliceAngle * 0.9;
 
-  // calculate target angle so the chosen slice lands at the arrow
-  const targetAngle = angle + extraRotations * 2 * Math.PI +
+  // calculate a new absolute angle (ignore previous angle)
+  const targetAngle = extraRotations * 2 * Math.PI +
                       (numbers.length - targetIndex) * sliceAngle -
                       sliceAngle/2 + randomOffsetWithinSlice;
 
-  const spinDuration = 2.5 + Math.random() * 1.5; // slightly random spin duration
+  const spinDuration = 2.5 + Math.random() * 1.5; // slightly random duration
 
-  // reset transition for instant jump
+  // reset transition and jump to 0 so every spin starts fresh
   canvas.style.transition = 'none';
-  canvas.style.transform = `rotate(${angle}rad)`;
+  canvas.style.transform = `rotate(0rad)`;
   void canvas.offsetWidth; // force reflow
 
   // animate spin
@@ -201,7 +201,7 @@ function spin() {
 
   setTimeout(() => {
     spinning = false;
-    angle = targetAngle % (2 * Math.PI);
+    angle = targetAngle % (2 * Math.PI); // store new angle for future spins
   }, spinDuration * 1000);
 }
 
