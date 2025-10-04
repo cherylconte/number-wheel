@@ -172,28 +172,27 @@ function spin() {
     if (spinning) return;
     spinning = true;
 
-    // More spins and speed
-    const extraRotations = Math.floor(Math.random() * 5) + 8; // spins 8-12 times
+    // Always spin enough rotations for excitement
+    const extraRotations = Math.floor(Math.random() * 5) + 8; // 8-12 rotations
     const randomOffset = Math.random() * 2 * Math.PI; // random landing angle
     const targetAngle = angle + extraRotations * 2 * Math.PI + randomOffset;
 
-    // Reset transition instantly to avoid slowing down on repeated spins
+    // reset transition so the browser can spin properly again
     canvas.style.transition = 'none';
     canvas.style.transform = `rotate(${angle}rad)`; // snap to current angle
 
-    // force reflow so the browser registers the reset
+    // force reflow to register the reset
     void canvas.offsetWidth;
 
-    // now apply the spin with transition
-    canvas.style.transition = 'transform 4s cubic-bezier(0.25, 1, 0.25, 1)';
+    // apply new spin
+    canvas.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)'; // slightly faster easing
     canvas.style.transform = `rotate(${targetAngle}rad)`;
 
     setTimeout(() => {
         spinning = false;
-        angle = targetAngle % (2 * Math.PI); // store new angle
-    }, 4000);
+        angle = targetAngle % (2 * Math.PI);
+    }, 3000); // match the duration above
 }
-
 
   buildBtn.addEventListener("click", buildSpinner);
 
