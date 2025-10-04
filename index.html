@@ -59,8 +59,8 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    transition: transform 4s cubic-bezier(0.25, 1, 0.25, 1);
     touch-action: manipulation;
+    transform-origin: 50% 50%;
   }
   #arrow {
     position: absolute;
@@ -123,8 +123,7 @@
   canvas.height = 500;
 
   function getColors() {
-    return Array.from(colorPickersDiv.querySelectorAll('input[type=color]'))
-                .map(input => input.value);
+    return Array.from(colorPickersDiv.querySelectorAll('input[type=color]')).map(input => input.value);
   }
 
   function buildSpinner() {
@@ -168,52 +167,42 @@
     });
   }
 
-function spin() {
-  if (spinning || numbers.length === 0) return;
-  spinning = true;
+  function spin() {
+    if (spinning || numbers.length === 0) return;
+    spinning = true;
 
-  const sliceAngle = 2 * Math.PI / numbers.length;
+    const sliceAngle = 2 * Math.PI / numbers.length;
 
-  // pick a random target slice correctly
-  const targetIndex = Math.floor(Math.random() * numbers.length);
+    // pick a truly random target
+    const targetIndex = Math.floor(Math.random() * numbers.length);
+    const randomOffset = Math.random() * sliceAngle; // random inside slice
 
-  // add extra full rotations for randomness
-  const extraRotations = Math.floor(Math.random() * 15) + 15;
+    // extra rotations for realism
+    const extraRotations = Math.floor(Math.random() * 15) + 15;
 
-  // small random offset inside the slice
-  const randomOffsetWithinSlice = (Math.random() - 0.5) * sliceAngle * 0.9;
+    const targetAngle = extraRotations * 2 * Math.PI +
+                        (numbers.length - targetIndex) * sliceAngle -
+                        sliceAngle / 2 + randomOffset;
 
-  // calculate new absolute angle ignoring previous angle
-  const targetAngle = extraRotations * 2 * Math.PI +
-                      (numbers.length - targetIndex) * sliceAngle -
-                      sliceAngle / 2 + randomOffsetWithinSlice;
+    const spinDuration = 2.5 + Math.random() * 1.5;
 
-  const spinDuration = 2.5 + Math.random() * 1.5; // random duration for natural spin
+    canvas.style.transition = 'none';
+    canvas.style.transform = `rotate(0rad)`;
+    void canvas.offsetWidth;
 
-  // reset transition to start from 0 each spin
-  canvas.style.transition = 'none';
-  canvas.style.transform = `rotate(0rad)`;
-  void canvas.offsetWidth; // force reflow
+    canvas.style.transition = `transform ${spinDuration}s cubic-bezier(0.33, 1, 0.68, 1)`;
+    canvas.style.transform = `rotate(${targetAngle}rad)`;
 
-  // animate spin
-  canvas.style.transition = `transform ${spinDuration}s cubic-bezier(0.33, 1, 0.68, 1)`;
-  canvas.style.transform = `rotate(${targetAngle}rad)`;
-
-  setTimeout(() => {
-    spinning = false;
-    angle = targetAngle % (2 * Math.PI); // store new angle
-  }, spinDuration * 1000);
-}
-
-
+    setTimeout(() => {
+      spinning = false;
+      angle = targetAngle % (2 * Math.PI);
+    }, spinDuration * 1000);
+  }
 
   buildBtn.addEventListener("click", buildSpinner);
-
-  // spin on button click or touch
   spinnerContainer.addEventListener("click", spin);
   spinnerContainer.addEventListener("touchstart", spin);
 
-  // add new color picker
   addColorBtn.addEventListener("click", () => {
     const newColor = document.createElement("input");
     newColor.type = "color";
@@ -221,7 +210,7 @@ function spin() {
     colorPickersDiv.insertBefore(newColor, addColorBtn);
   });
 
-  buildSpinner(); // initial draw
+  buildSpinner();
 })();
 </script>
 
