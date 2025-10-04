@@ -172,27 +172,31 @@ function spin() {
     if (spinning) return;
     spinning = true;
 
-    // Always spin enough rotations for excitement
-    const extraRotations = Math.floor(Math.random() * 5) + 8; // 8-12 rotations
-    const randomOffset = Math.random() * 2 * Math.PI; // random landing angle
+    // Normalize angle to 0–2π
+    angle = angle % (2 * Math.PI);
+
+    // Determine spin: 8–12 full rotations + random slice offset
+    const extraRotations = Math.floor(Math.random() * 5) + 8;
+    const randomOffset = Math.random() * 2 * Math.PI;
     const targetAngle = angle + extraRotations * 2 * Math.PI + randomOffset;
 
-    // reset transition so the browser can spin properly again
+    // Reset transition
     canvas.style.transition = 'none';
-    canvas.style.transform = `rotate(${angle}rad)`; // snap to current angle
+    canvas.style.transform = `rotate(${angle}rad)`;
 
-    // force reflow to register the reset
+    // Force reflow
     void canvas.offsetWidth;
 
-    // apply new spin
-    canvas.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)'; // slightly faster easing
+    // Apply new spin
+    canvas.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
     canvas.style.transform = `rotate(${targetAngle}rad)`;
 
     setTimeout(() => {
         spinning = false;
-        angle = targetAngle % (2 * Math.PI);
-    }, 3000); // match the duration above
+        angle = targetAngle % (2 * Math.PI); // keep angle normalized
+    }, 3000); // match the duration
 }
+
 
   buildBtn.addEventListener("click", buildSpinner);
 
