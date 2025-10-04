@@ -168,18 +168,24 @@
     });
   }
 
-  function spin() {
+function spin() {
     if (spinning) return;
     spinning = true;
-    const extraRotations = Math.floor(Math.random() * 3) + 5;
-    const targetAngle = angle + extraRotations * 2 * Math.PI + Math.random() * 2 * Math.PI;
+
+    // More spins and speed
+    const extraRotations = Math.floor(Math.random() * 5) + 8; // spins 8-12 times
+    const randomOffset = Math.random() * 2 * Math.PI; // random landing angle
+    const targetAngle = angle + extraRotations * 2 * Math.PI + randomOffset;
+
+    canvas.style.transition = 'transform 4s cubic-bezier(0.25, 1, 0.25, 1)';
     canvas.style.transform = `rotate(${targetAngle}rad)`;
+
     setTimeout(() => {
-      spinning = false;
-      angle = targetAngle % (2 * Math.PI);
-      // do NOT show alert
-    }, 4200);
-  }
+        spinning = false;
+        angle = targetAngle % (2 * Math.PI);
+    }, 4000);
+}
+
 
   buildBtn.addEventListener("click", buildSpinner);
 
