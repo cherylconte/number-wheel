@@ -116,7 +116,7 @@
 
   let numbers = [];
   let colors = [];
-  let angle = 0;
+  let angle = 0; // store last angle so spins continue from last position
   let spinning = false;
 
   canvas.width = 500;
@@ -133,7 +133,6 @@
     colors = getColors();
     numbers = [];
     for (let i = min; i <= max; i++) numbers.push(i);
-
     drawSpinner(fontSizeInput);
   }
 
@@ -173,29 +172,28 @@
 
     const sliceAngle = 2 * Math.PI / numbers.length;
 
-    // pick a truly random target
+    // pick a random target index and random offset inside that slice
     const targetIndex = Math.floor(Math.random() * numbers.length);
-    const randomOffset = Math.random() * sliceAngle; // random inside slice
+    const randomOffset = Math.random() * sliceAngle;
 
-    // extra rotations for realism
-    const extraRotations = Math.floor(Math.random() * 15) + 15;
+    // random number of full rotations (makes it feel less predictable)
+    const extraRotations = Math.floor(Math.random() * 20) + 10; // between 10–30 rotations
 
-    const targetAngle = extraRotations * 2 * Math.PI +
-                        (numbers.length - targetIndex) * sliceAngle -
-                        sliceAngle / 2 + randomOffset;
+    // compute new target angle relative to current position
+    const targetAngle = angle + extraRotations * 2 * Math.PI +
+      (numbers.length - targetIndex) * sliceAngle - sliceAngle / 2 + randomOffset;
 
-    const spinDuration = 2.5 + Math.random() * 1.5;
+    // randomize spin duration between 2.5s and 6s for natural variation
+    const spinDuration = 2.5 + Math.random() * 3.5;
 
-    canvas.style.transition = 'none';
-    canvas.style.transform = `rotate(0rad)`;
-    void canvas.offsetWidth;
-
-    canvas.style.transition = `transform ${spinDuration}s cubic-bezier(0.33, 1, 0.68, 1)`;
+    // set transition and animate
+    canvas.style.transition = `transform ${spinDuration}s cubic-bezier(0.25, 1, 0.5, 1)`;
     canvas.style.transform = `rotate(${targetAngle}rad)`;
 
+    // store new base angle
     setTimeout(() => {
       spinning = false;
-      angle = targetAngle % (2 * Math.PI);
+      angle = targetAngle % (2 * Math.PI); // keep remainder for next spin
     }, spinDuration * 1000);
   }
 
@@ -213,6 +211,3 @@
   buildSpinner();
 })();
 </script>
-
-</body>
-</html>
